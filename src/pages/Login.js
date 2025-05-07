@@ -1,34 +1,30 @@
-import { useState, useRef } from "react";
+import { useState} from "react";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth"; 
 import { auth, db } from "../firebase"; 
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore"; 
 import { toast } from "react-toastify"; 
-import ReCAPTCHA from "react-google-recaptcha";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [adminID, setAdminID] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [captchaVerified, setCaptchaVerified] = useState(false);
-  const recaptchaRef = useRef(); 
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    if (!captchaVerified) {
-      toast.error("Please verify the CAPTCHA.");
-      return;
-    }
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const userCredential = await signInWithEmailAndPassword(auth, `${adminID}@example.com`, password);
+      const admin = userCredential.user;
+      console.log(admin.uid);
 
-      const userDocRef = doc(db, "users", user.uid);
+      const userDocRef = doc(db, "admins", admin.uid);
       const userDoc = await getDoc(userDocRef);
+      console.log(2);
+      
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        if (userData.userRole === "Admin") {
+        if (userData.UserRole === "Admin") {
           navigate("/");
         } else {
           await signOut(auth);
@@ -43,14 +39,9 @@ const Login = () => {
     } catch (error) {
       setErrorMessage("Invalid email or password.");
       toast.error("Invalid email or password.");
-      
-      setCaptchaVerified(false);
-      recaptchaRef.current.reset(); 
+      console.log(`${adminID}@example.com`);
+      console.log(error);
     }
-  };
-
-  const handleCaptchaVerification = (value) => {
-    setCaptchaVerified(!!value);
   };
 
   return (
@@ -60,11 +51,14 @@ const Login = () => {
         {errorMessage && <div className="mb-4 text-red-500">{errorMessage}</div>}
         <input
           className="border p-2 w-full mb-4"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          name="AdminID"
+          placeholder="Admin ID"
+          value={adminID}
+          required
+          onChange={(e) => setAdminID(e.target.value)}
         />
+
         <input
           className="border p-2 w-full mb-6"
           type="password"
@@ -72,16 +66,10 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <ReCAPTCHA
-          sitekey="6Lf63EoqAAAAAJLVIpWdZmg-pri-kVm-Lw2a2m5E" 
-          onChange={handleCaptchaVerification}
-          ref={recaptchaRef} 
-          className="mb-4"
-        />
+
         <button
           className="bg-blue-500 text-white p-2 w-full rounded hover:bg-blue-600"
           onClick={handleLogin}
-          disabled={!captchaVerified}
         >
           Login
         </button>

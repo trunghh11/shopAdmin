@@ -18,7 +18,8 @@ const AdminHome = () => {
     location.pathname === '/users' || 
     location.pathname === '/products' ||
     location.pathname.startsWith('/products/edit') ||
-    location.pathname.startsWith('/products/add');
+    location.pathname.startsWith('/products/add')||
+    location.pathname.startsWith('/manage-posts');
 
   return (
     <div className="flex h-screen">
@@ -27,7 +28,7 @@ const AdminHome = () => {
         <div>
           <h2 className="text-lg font-bold mb-4">Admin Panel</h2>
           <ul className="space-y-2">
-            <li>
+            {/* <li>
               <Link to="/users" className="block px-4 py-2 rounded hover:bg-gray-700">
                 Manage Users
               </Link>
@@ -35,6 +36,11 @@ const AdminHome = () => {
             <li>
               <Link to="/products" className="block px-4 py-2 rounded hover:bg-gray-700">
                 Manage Products
+              </Link>
+            </li> */}
+            <li>
+              <Link to="/manage-posts" className="block px-4 py-2 rounded hover:bg-gray-700">
+                Manage Posts
               </Link>
             </li>
           </ul>

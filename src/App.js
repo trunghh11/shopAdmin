@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Users from "./pages/Users";
@@ -7,6 +6,8 @@ import AddProduct from "./pages/ProductManagement/AddProduct";
 import EditProduct from "./pages/ProductManagement/EditProduct";
 import Login from "./pages/Login";
 import AdminHome from "./pages/AdminHome";
+import ManagePosts from "./pages/ManagePosts"; // Import ManagePosts
+import PostDetail from "./pages/PostDetail"; // Import PostDetail
 import { ToastContainer } from "react-toastify"; 
 import 'react-toastify/dist/ReactToastify.css'; 
 import { AuthProvider } from "./contexts/AuthContext"; 
@@ -30,6 +31,8 @@ function App() {
             <Route path="products" element={<ProductManager />} />
             <Route path="products/add" element={<AddProduct />} />
             <Route path="products/edit/:id" element={<EditProduct />} />
+            <Route path="manage-posts" element={<ManagePosts />} />
+            <Route path="manage-posts/:postId" element={<PostDetail />} /> {/* Add PostDetail route */}
           </Route>
           {/* Optionally, handle 404 Not Found */}
           <Route path="*" element={<div className="p-4">404 Not Found</div>} />

@@ -16,11 +16,11 @@ export const AuthProvider = ({ children }) => {
     const fetchUserRole = async () => {
       if (user) {
         try {
-          const userDocRef = doc(db, "users", user.uid);
+          const userDocRef = doc(db, "admins", user.uid);
           const userDoc = await getDoc(userDocRef);
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            setRole(userData.userRole); 
+            setRole(userData.UserRole); 
           } else {
             setRole(null);
           }
