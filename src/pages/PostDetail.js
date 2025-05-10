@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase';
-import { doc, getDoc, updateDoc} from 'firebase/firestore';
+import { doc, getDoc, updateDoc, addDoc, collection} from 'firebase/firestore';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,6 +15,7 @@ const PostDetail = () => {
   const [activeImage, setActiveImage] = useState(null);
   const user = auth.currentUser;
   const navigate = useNavigate();
+  const [rejectReason, setRejectReason] = useState("");
 
   useEffect(() => {
     const fetchPostDetails = async () => {
@@ -114,12 +115,26 @@ const PostDetail = () => {
         toast.error("Invalid product or PostID.");
         return;
       }
-  
+
+      if (!rejectReason.trim()) {
+        toast.error("Please provide a reason for rejection.");
+        return;
+      }
+      
+
       const postRef = doc(db, "post", product.PostID); // Sử dụng PostID từ product
       const productRef = doc(db, "products", postId);
-  
       await updateDoc(postRef, { Status: "Đã từ chối" });
-      await updateDoc(productRef, { showOnHome: false });
+      await updateDoc(productRef, { showOnHome: null });
+
+      const rejectionRef = collection(db, "post_denial_reasons");
+      console.log(rejectionRef);
+
+      await addDoc(rejectionRef, {
+        PostID: product.PostID,
+        Reasons: rejectReason,
+        Timestamp: new Date(),
+      });
   
       toast.success("Post rejected successfully.");
       navigate("/manage-posts");
@@ -155,6 +170,21 @@ const PostDetail = () => {
             Từ chối
           </button>
         </div>
+      </div>
+
+            {/* Textarea để nhập lý do từ chối */}
+      <div className="mb-6">
+        <label htmlFor="rejectReason" className="block text-gray-700 font-semibold mb-2">
+          Lý do từ chối:
+        </label>
+        <textarea
+          id="rejectReason"
+          className="w-full border rounded p-2"
+          rows="4"
+          placeholder="Nhập lý do từ chối..."
+          value={rejectReason}
+          onChange={(e) => setRejectReason(e.target.value)}
+        ></textarea>
       </div>
 
         <div className="bg-white shadow-xl rounded-lg overflow-hidden mb-12">

@@ -1,15 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
- match /databases/{database}/documents {
+  match /databases/{database}/documents {
 
    match /users/{userId} {
      allow read: if request.auth != null; // Allow all authenticated users to view user profiles
      allow write: if request.auth != null && request.auth.uid == userId;
-   }
-
-   match /admins/{adminId} {
-    allow read: if request.auth != null && 
-                get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin';
    }
 
    match /products/{productId} {
@@ -24,6 +19,15 @@ service cloud.firestore {
                    get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin';
    }
 
+   match /admins/{adminId} {
+    allow read: if request.auth != null && 
+                get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin';
+   }
+
+   match /categories/{categoryId} {
+     allow read: if true; // Allow all users to read categories
+   }
+
    match /users/{userId}/cart/{cartItemId} {
      allow read, write: if request.auth != null && request.auth.uid == userId;
    }
@@ -35,14 +39,53 @@ service cloud.firestore {
    }
 
    match /post/{postId} {
-      allow read: if request.auth != null; // Allow all authenticated users to view posts
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.PosterID; // Allow users to create posts
+      allow read: if request.auth != null; // Cho phép tất cả người dùng đã đăng nhập đọc
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.PosterID; // Cho phép người dùng tạo bài viết
       allow update: if request.auth != null && (
-        request.auth.uid == resource.data.PosterID || // Allow users to update their own posts
-        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin' // Allow admins to update posts
+        request.auth.uid == resource.data.PosterID || // Cho phép người tạo bài viết cập nhật bài viết của họ
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin' // Cho phép admin cập nhật bài viết
       );
-      allow delete: if request.auth != null && request.auth.uid == resource.data.PosterID; // Allow users to delete their own posts
+      allow delete: if request.auth != null && request.auth.uid == resource.data.PosterID; // Cho phép người tạo bài viết xóa bài viết của họ
    }
 
- }
+   match /post_denial_reasons/{post_denial_reasonId} {
+      allow read: if request.auth != null; // Cho phép tất cả người dùng đã đăng nhập đọc
+      allow create, write: if request.auth != null && 
+                  get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin'; // Chỉ admin được ghi
+   }
+   
+    match /fund/{fundId} {
+      allow read: if true;  
+    }
+    
+    match /fund_transaction/{transactionId} {
+      // Allow read access to all authenticated users
+      allow read: if request.auth != null;
+      
+      // Allow write access to authenticated users
+      // You can restrict this further based on the user's role, fund, etc.
+      allow create: if request.auth != null;  // Any authenticated user can create a donation
+      allow update: if request.auth != null && request.auth.data.userId == resource.data.DonorID; // Only the donor can update their transaction
+      allow delete: if request.auth != null && request.auth.data.userId == resource.data.DonorID; // Only the donor can delete their own transaction
+    }
+
+    // EXCHANGE TRANSACTION RULES
+    match /exchangeTransactions/{transactionId} {
+      allow read: if request.auth != null; 
+      allow create: if request.auth != null;
+      allow update: if request.auth != null;  // Cho phép mọi người dùng đã xác thực cập nhật
+    }
+    
+    // NOTIFICATION RULES
+    match /notifications/{notificationId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.uid;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && request.auth.uid == resource.data.uid;
+    }
+
+    // SALE TRANSACTION RULES
+    match /saleTransactions/{transactionId} {
+      allow read, write: if request.auth != null;
+    }
+  }
 }
