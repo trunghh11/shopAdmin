@@ -20,6 +20,10 @@ const AdminHome = () => {
     location.pathname.startsWith('/products/edit') ||
     location.pathname.startsWith('/products/add')||
     location.pathname.startsWith('/manage-posts');
+    location.pathname.startsWith('/manage-funds');
+    location.pathname.startsWith('/manage-users');
+    location.pathname.startsWith('/manage-reports');
+
 
   return (
     <div className="flex h-screen">
@@ -41,6 +45,21 @@ const AdminHome = () => {
             <li>
               <Link to="/manage-posts" className="block px-4 py-2 rounded hover:bg-gray-700">
                 Manage Posts
+              </Link>
+            </li>
+            <li>
+              <Link to="/manage-funds" className="block px-4 py-2 rounded hover:bg-gray-700">
+                Manage Funds
+              </Link>
+            </li>
+             <li>
+              <Link to="/manage-users" className="block px-4 py-2 rounded hover:bg-gray-700">
+                Manage Users
+              </Link>
+            </li>
+            <li>
+              <Link to="/manage-reports" className="block px-4 py-2 rounded hover:bg-gray-700">
+                Manage Reports
               </Link>
             </li>
           </ul>

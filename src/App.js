@@ -7,6 +7,9 @@ import EditProduct from "./pages/ProductManagement/EditProduct";
 import Login from "./pages/Login";
 import AdminHome from "./pages/AdminHome";
 import ManagePosts from "./pages/ManagePosts"; // Import ManagePosts
+import ManageFunds from './pages/ManageFunds';
+import ManageUsers from './pages/ManageUsers';
+import ManageReports from './pages/ManageReports';
 import PostDetail from "./pages/PostDetail"; // Import PostDetail
 import { ToastContainer } from "react-toastify"; 
 import 'react-toastify/dist/ReactToastify.css'; 
@@ -32,6 +35,9 @@ function App() {
             <Route path="products/add" element={<AddProduct />} />
             <Route path="products/edit/:id" element={<EditProduct />} />
             <Route path="manage-posts" element={<ManagePosts />} />
+            <Route path="manage-funds" element={<ManageFunds />} />
+            <Route path="manage-users" element={<ManageUsers />} />
+            <Route path="manage-reports" element={<ManageReports />} />
             <Route path="manage-posts/:postId" element={<PostDetail />} /> {/* Add PostDetail route */}
           </Route>
           {/* Optionally, handle 404 Not Found */}
